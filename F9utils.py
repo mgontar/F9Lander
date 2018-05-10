@@ -3,7 +3,7 @@
 # ----------------------WRAPPER--------------------- #
 # -------------------------------------------------- #
 # imports
-
+from __future__ import print_function
 import socket
 import cPickle as pickle
 import glob
@@ -77,7 +77,7 @@ class F9GameClient:
             self.socket.send(str(action))
             self.curState = self.getServerState()
         else:
-            print "Invalid Action"
+            print("Invalid Action")
 
 # -------------------------------------------------- #
 
@@ -111,7 +111,7 @@ class Snapshot:
         state = None
         if len(file_path):
             f = file(file_path[-1], 'rb')
-            print "Loading snapshot", file_path[-1]
+            print("Loading snapshot", file_path[-1])
             state = pickle.load(f)
             f.close()
         return state

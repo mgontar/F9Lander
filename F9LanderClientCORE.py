@@ -3,8 +3,8 @@
 # ----------------------CLIENT---------------------- #
 # -------------------------------------------------- #
 
+from __future__ import print_function
 import numpy as np
-
 from F9utils import F9GameClient
 from F9utils import RLAgent
 
@@ -96,7 +96,7 @@ def solve():
         ai.provideFeedback(state, action, reward, new_state)    # Provide feeback to the agent
 
         agent, platform, system = new_state
-        print "Agent state %s\n Platform state %s\n System state %s\n Reward %s\n" % (agent, platform, system, reward)
+        print("Agent state %s\n Platform state %s\n System state %s\n Reward %s\n" % (agent, platform, system, reward))
 
         if client.isTerminalState(new_state):
             client.reset_game()
