@@ -50,8 +50,16 @@ class F9GameClient:
             # MAYBE BUG ---> delete "or system["flight_status"] == "landed" from isTerminalState
             # but elif fixed it, so it's feature
             score = -100.0
-        else:  # Remove this if you don't want to use handcrafted heuristic
-            score = 1.0 / (1 + agent["dist"]) + agent["contact_time"]
+        else:
+            # --------- YOUR CODE HERE ----------
+            # You can write a reward function here. It will be used as a heuristics
+            # for the states when the rocket is neither landed nor crashed.
+
+
+            return 0
+            # -----------------------------------
+
+
         self.totalScore += score
         return score
 
