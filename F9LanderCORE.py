@@ -3,7 +3,7 @@
 # ----------------------SERVER---------------------- #
 # -------------------------------------------------- #
 # imports
-
+from __future__ import print_function
 import pygame
 from pygame.locals import *
 import numpy as np
@@ -196,17 +196,17 @@ class Rocket(object):
         self.report()
 
     def __debug_prints__(self, comment=" "):
-        print "\n", "---------------------> " + comment
-        print "_contacts_number_", len(self.body.contacts)
-        print "_distance_", self.dist1, self.dist2
-        print "-------"
-        print "_current_velocity_y_x_", self.body.linearVelocity[1], self.body.linearVelocity[0]
-        print "-------"
-        print "_previous_velocity_y_x_", self.bvy, self.bvx
-        print "-------"
-        print "_velocity_gap_", np.fabs(np.fabs(self.body.linearVelocity[1]) - np.fabs(self.bvy)), \
-            np.fabs(np.fabs(self.body.linearVelocity[0]) - np.fabs(self.bvx)), self.durability
-        print "-------"
+        print("\n", "---------------------> " + comment)
+        print("_contacts_number_", len(self.body.contacts))
+        print("_distance_", self.dist1, self.dist2)
+        print("-------")
+        print("_current_velocity_y_x_", self.body.linearVelocity[1], self.body.linearVelocity[0])
+        print("-------")
+        print("_previous_velocity_y_x_", self.bvy, self.bvx)
+        print("-------")
+        print("_velocity_gap_", np.fabs(np.fabs(self.body.linearVelocity[1]) - np.fabs(self.bvy)), \
+            np.fabs(np.fabs(self.body.linearVelocity[0]) - np.fabs(self.bvx)), self.durability)
+        print("-------")
 
     def __is_alive__(self):
         self.contact = False
@@ -227,7 +227,7 @@ class Rocket(object):
                     if b2e.contact.fixtureA.userData == "wings":
                         self.wings_c = True
         # print "_part_c_", self.frame_c, self.wings_c
-        #
+        #dwwadwadwddwadaw
         if len(self.body.contacts) > 0 and self.wings_c:
             # supports are stronger than the body | + uadd | 7.9
             uadd = 3.9
@@ -246,7 +246,7 @@ class Rocket(object):
             #    print tb2e
             self.contact = True
             self.contact_time += 0.01   # 2.5 sec * 90 iteration = 225 iteration * 0.01 = 2.25 # + 0.5 for 3 sec
-            print self.contact_time
+            # print(self.contact_time)
             #
             if np.fabs(np.fabs(self.body.linearVelocity[1]) - np.fabs(self.bvy)) > self.durability or \
                     np.fabs(np.fabs(self.body.linearVelocity[0]) - np.fabs(self.bvx)) > self.durability:
@@ -383,15 +383,15 @@ class Simulation(object):
             self.sock = socket.socket()
             self.sock.bind(self.address)
             self.sock.listen(1)
-            print "Waiting for client"
+            print("Waiting for client")
             self.conn, self.addr = self.sock.accept()
-            print self.conn, self.addr
+            print(self.conn, self.addr)
 
     def __restart__(self, world_obj, simulation_array):
         self.win = "none"
         self.terminal_state = False
         self.score_flag = False
-        print "B: Bodies, objects", len(world_obj.world.bodies), len(simulation_array)
+        # print("B: Bodies, objects", len(world_obj.world.bodies), len(simulation_array))
         for entity in simulation_array:
             if entity.type == "actor":
                 world_obj.world.DestroyBody(entity.body)
@@ -517,7 +517,7 @@ class Simulation(object):
                             "is_terminal_state": self.terminal_state, "score": self.score})
         # OUTPUT TO PIPE OR SOCKET HERE
         if self.commands == "socket":
-            self.conn.send(str(report_list))
+            self.conn.send(bytes(str(report_list), "UTF-8"))
         # print self.win
         #
         self.step_number += 1
@@ -532,12 +532,12 @@ class Simulation(object):
                     self.running = False
                     if self.commands == "socket":
                         self.conn.close()
-                        print "Socket closed"
+                        print("Socket closed")
                     pygame.quit()
-                    print "All engines stopped"
+                    print("All engines stopped")
                 if event.type == KEYDOWN and event.key == K_SPACE:
                     simulation_array = self.__restart__(world_obj, simulation_array)
-                    print "A: Bodies, objects", len(world_obj.world.bodies), len(simulation_array)
+                    print("A: Bodies, objects", len(world_obj.world.bodies), len(simulation_array))
                     # here was code from __restart__()
         return report_list
 
@@ -569,7 +569,7 @@ def main():
     simulation = Simulation(options)
     entities = [Rocket(world), Platform(world)]
     #
-    print entities
+    print(entities)
     #
     while simulation.running:
         report = simulation.step(world, entities)
@@ -583,7 +583,36 @@ def main():
                 simulation.running = False
         # print report
         # time.sleep(1.0)
-    print entities
+    print(entities)
+
+def start_env(socket=True, ip='127.0.0.1', port=50007, display=True, test=-42):
+    test_iterations = None
+    log_file = None
+    if test > 0:
+        test_iterations = test
+        log_file = open("./log/log{0}.txt".format(port), "w")
+        log_file.write("[")
+    #
+    options = Options(socket, ip, port, display)
+    world = World(options)
+    simulation = Simulation(options)
+    entities = [Rocket(world), Platform(world)]
+    #
+    print(entities)
+    #
+    while simulation.running:
+        report = simulation.step(world, entities)
+        if test_iterations is not None:
+            if test_iterations > 0:
+                log_file.write(str(report) + ",")   # + "\n"
+                test_iterations -= 1
+            else:
+                log_file.write("]")
+                log_file.close()
+                simulation.running = False
+        # print report
+        # time.sleep(1.0)
+    print(entities)
 
 if __name__ == "__main__":
     main()
