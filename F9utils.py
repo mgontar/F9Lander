@@ -43,7 +43,6 @@ class F9GameClient:
 
     def getReward(self, state):
         agent, _, system = state
-        score = 0.0
         if system["flight_status"] == "landed":
             score = 100.0
         elif self.isTerminalState(state):
@@ -55,10 +54,8 @@ class F9GameClient:
             # You can write a reward function here. It will be used as a heuristics
             # for the states when the rocket is neither landed nor crashed.
 
-
-            return 0
+            score = 0.0
             # -----------------------------------
-
 
         self.totalScore += score
         return score
