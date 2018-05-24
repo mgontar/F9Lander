@@ -5,7 +5,7 @@
 # imports
 from __future__ import print_function
 import socket
-import cPickle as pickle
+import pickle as pickle
 import glob
 import os
 
@@ -29,7 +29,7 @@ class F9GameClient:
 
     def reset_game(self):
         # send init command | new game
-        self.socket.send(RESET_CMD)
+        self.socket.send(RESET_CMD.encode())
         self.curState = self.getServerState()
 
     def isTerminalState(self, state):
@@ -70,16 +70,16 @@ class F9GameClient:
         data = eval(self.socket.recv(1024))
         state = None
         if data:
-            agent_state = (item for item in data if item["type"] == "actor").next()
-            platform_state = (item for item in data if item["type"] == "decoration").next()
-            system_state = (item for item in data if item["type"] == "system").next()
+            agent_state = next((item for item in data if item["type"] == "actor"))
+            platform_state = next((item for item in data if item["type"] == "decoration"))
+            system_state = next((item for item in data if item["type"] == "system"))
             state = [agent_state, platform_state, system_state]
         return state
 
     def doAction(self, action):
         # act in the game environment
         if any([action == act for act in self.actions()]):
-            self.socket.send(str(action))
+            self.socket.send(str(action).encode())
             self.curState = self.getServerState()
         else:
             print("Invalid Action")
